@@ -1,0 +1,102 @@
+/* Motion presets: gentleReveal (fade), cinematicReveal (words/lines), handwritten, light-sweep. */
+
+.reveal--fade {
+  animation: gentle-reveal 1.1s var(--ease-out) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+.reveal__word {
+  display: inline-block;
+  animation: cinematic-reveal 0.9s var(--ease-out) both;
+  animation-delay: calc(var(--reveal-delay, 0s) + var(--i) * var(--step, 0.06s));
+}
+
+.reveal--lines {
+  display: block;
+}
+
+.reveal__line {
+  display: block;
+  animation: cinematic-reveal 1.2s var(--ease-out) both;
+  animation-delay: calc(var(--reveal-delay, 0s) + var(--i) * 0.55s);
+}
+
+.reveal--handwritten {
+  font-family: var(--font-hand);
+  animation: handwrite 2.2s var(--ease-gentle) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+.reveal--light-sweep {
+  background: linear-gradient(
+      100deg,
+      var(--color-text) 0%,
+      var(--color-text) 40%,
+      var(--color-warm) 50%,
+      var(--color-text) 60%,
+      var(--color-text) 100%
+    )
+    0 0 / 300% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation:
+    gentle-reveal 0.9s var(--ease-out) both,
+    light-sweep 2.6s var(--ease-in-out) both;
+  animation-delay: var(--reveal-delay, 0s);
+}
+
+.reveal--light-sweep p {
+  -webkit-text-fill-color: transparent;
+}
+
+[data-instant] .reveal,
+[data-instant] .reveal * {
+  animation: none !important;
+}
+
+@keyframes gentle-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes cinematic-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.35em);
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+
+@keyframes handwrite {
+  from {
+    clip-path: inset(0 100% 0 0);
+    opacity: 0.4;
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+    opacity: 1;
+  }
+}
+
+@keyframes light-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}

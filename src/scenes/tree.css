@@ -1,0 +1,353 @@
+.tree-scene {
+  display: grid;
+  justify-items: center;
+  max-width: var(--content-wide);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tree-scene__header {
+  justify-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.tree-scene__prompt {
+  font-size: var(--text-xl);
+  animation: gentle-reveal 1.2s 0.8s var(--ease-out) both;
+}
+
+.tree-scene__count {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.tree {
+  position: relative;
+  width: min(100%, max(18rem, 100dvh - 22rem), 48rem);
+  aspect-ratio: 1;
+  margin-top: var(--space-2);
+}
+
+/* Ground mist: two soft layers drifting very slowly. */
+.tree__mist {
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 2%;
+  height: 22%;
+  background:
+    radial-gradient(
+      50% 50% at 50% 60%,
+      color-mix(in oklab, var(--color-glow) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      40% 40% at 30% 50%,
+      color-mix(in oklab, var(--color-accent-secondary) 14%, transparent),
+      transparent 70%
+    );
+  filter: blur(12px);
+  animation: mist-drift 14s var(--ease-in-out) infinite alternate;
+  pointer-events: none;
+}
+
+/* The canopy and its memory lights sway together around the trunk base. */
+.tree__sway {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 90%;
+  animation: tree-sway 11s var(--ease-in-out) infinite alternate;
+}
+
+.tree__svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.tree__heart {
+  animation: heart-glow 7s var(--ease-in-out) infinite alternate;
+}
+
+.tree__branches path,
+.tree__roots path {
+  fill: none;
+  stroke: url(#tree-bark);
+  stroke-linecap: round;
+}
+
+/* treeAwakening: the tree grows from the trunk outward. */
+.tree__branches path {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: branch-grow 1.1s var(--ease-out) forwards;
+  animation-delay: calc(var(--depth) * 0.22s);
+}
+
+.tree__roots path {
+  opacity: 0.55;
+  filter: drop-shadow(0 0 6px var(--color-glow));
+  transition: opacity 600ms var(--ease-out);
+}
+
+.tree--active .tree__roots path {
+  opacity: 0.95;
+}
+
+.tree__leaves {
+  animation: leaves-in 1.6s 1.3s var(--ease-out) both;
+}
+
+.tree__leaf-group {
+  fill: var(--color-glow);
+  opacity: 0.55;
+  animation: leaf-shimmer 6s var(--ease-in-out) infinite alternate;
+}
+
+.tree__leaf-group--1 {
+  fill: var(--color-accent-secondary);
+  animation-duration: 8s;
+  animation-delay: -2s;
+}
+
+.tree__leaf-group--2 {
+  fill: var(--color-warm);
+  opacity: 0.45;
+  animation-duration: 10s;
+  animation-delay: -5s;
+}
+
+/* Energy trail from roots to the chosen memory. */
+.tree__trail {
+  fill: none;
+  stroke: var(--color-warm);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  filter: drop-shadow(0 0 6px var(--color-warm));
+  animation: trail-run 2.6s var(--ease-out) forwards;
+}
+
+/* ------------------------------------------------------- Memory lights -- */
+
+.tree__spots {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tree-spot {
+  position: absolute;
+  translate: -50% -50%;
+  animation: spot-in 900ms var(--ease-out) both;
+  animation-delay: calc(1.6s + var(--i) * 0.12s);
+}
+
+.tree-spot__button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+}
+
+.tree-spot__light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-text);
+  box-shadow:
+    0 0 10px 2px var(--color-glow),
+    0 0 26px 6px color-mix(in oklab, var(--color-glow) 45%, transparent);
+  animation: spot-pulse 4s var(--ease-in-out) infinite;
+  animation-delay: calc(var(--i) * -0.7s);
+  transition:
+    transform var(--dur-small) var(--ease-out),
+    background-color var(--dur-small) var(--ease-out),
+    box-shadow var(--dur-standard) var(--ease-out);
+}
+
+.tree-spot[data-explored] .tree-spot__light {
+  background: var(--color-warm);
+}
+
+.tree-spot__button:hover .tree-spot__light,
+.tree-spot__button:focus-visible .tree-spot__light,
+.tree-spot[data-active] .tree-spot__light {
+  transform: scale(1.6);
+  background: var(--color-warm);
+  box-shadow:
+    0 0 14px 4px var(--color-warm),
+    0 0 46px 14px color-mix(in oklab, var(--color-warm) 45%, transparent);
+}
+
+.tree-spot[data-near] .tree-spot__light {
+  transform: scale(1.25);
+}
+
+.tree-spot__label {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 2px);
+  display: grid;
+  width: max-content;
+  max-width: 13rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in oklab, var(--color-bg) 82%, transparent);
+  text-align: left;
+  translate: 0 -50%;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-small) var(--ease-out);
+}
+
+.tree-spot[data-side='right'] .tree-spot__label {
+  left: auto;
+  right: calc(100% + 2px);
+  text-align: right;
+}
+
+.tree-spot__button:hover .tree-spot__label,
+.tree-spot__button:focus-visible .tree-spot__label,
+.tree-spot[data-active] .tree-spot__label {
+  opacity: 1;
+}
+
+.tree-spot__title {
+  font-family: var(--font-display);
+  font-size: var(--text-base);
+  line-height: 1.2;
+  color: var(--color-text);
+}
+
+.tree-spot__date {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* Accessible list alternative */
+.tree-scene__list {
+  margin-top: var(--space-5);
+  color: var(--color-text-secondary);
+}
+
+.tree-scene__list summary {
+  min-height: var(--touch-target);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--space-3);
+  cursor: pointer;
+  font-size: var(--text-sm);
+}
+
+.tree-scene__list ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@keyframes branch-grow {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes leaves-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes leaf-shimmer {
+  from {
+    opacity: 0.35;
+  }
+  to {
+    opacity: 0.7;
+  }
+}
+
+@keyframes tree-sway {
+  from {
+    rotate: -0.45deg;
+  }
+  to {
+    rotate: 0.45deg;
+  }
+}
+
+@keyframes mist-drift {
+  from {
+    transform: translateX(-3%);
+    opacity: 0.8;
+  }
+  to {
+    transform: translateX(3%);
+    opacity: 1;
+  }
+}
+
+@keyframes heart-glow {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes trail-run {
+  0% {
+    stroke-dashoffset: 1;
+    opacity: 1;
+  }
+  35% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0;
+  }
+}
+
+@keyframes spot-in {
+  from {
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@keyframes spot-pulse {
+  0%,
+  100% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes gentle-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+    filter: blur(6px);
+  }
+}

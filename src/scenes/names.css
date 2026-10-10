@@ -1,0 +1,96 @@
+.names-scene {
+  max-width: var(--content-wide);
+  margin: 0 auto;
+}
+
+.names-scene__intro {
+  margin: calc(var(--space-6) * -1) 0 var(--space-7);
+}
+
+.names {
+  display: grid;
+  gap: var(--space-8) var(--space-7);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 820px) {
+  .names {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .name:nth-child(even) {
+    translate: 0 var(--space-8);
+  }
+}
+
+.name {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+}
+
+.name__kind {
+  opacity: 0;
+  transition: opacity 800ms var(--ease-out);
+}
+
+.name[data-visible] .name__kind {
+  opacity: 1;
+}
+
+.name__text {
+  font-size: var(--text-3xl);
+  font-weight: 300;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+/* Letters condense from scattered light into the name. */
+.name__letters span {
+  display: inline-block;
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(calc(sin(var(--l) * 1.7rad) * 0.6em)) scale(0.6);
+  text-shadow: 0 0 18px var(--color-glow);
+}
+
+.name[data-visible] .name__letters span {
+  animation: letter-assemble 1.1s var(--ease-out) forwards;
+  animation-delay: calc(var(--l) * 0.05s);
+}
+
+.name:not(:has(.name__letters)) .name__text {
+  opacity: 0;
+  transition: opacity 1s var(--ease-out);
+}
+
+.name[data-visible]:not(:has(.name__letters)) .name__text {
+  opacity: 1;
+}
+
+.name__date {
+  font-size: var(--text-lg);
+}
+
+.name__photo {
+  width: min(100%, 20rem);
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-photo);
+}
+
+[data-motion='reduced'] .name__kind,
+[data-motion='reduced'] .name__text {
+  opacity: 1 !important;
+}
+
+@keyframes letter-assemble {
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+    text-shadow: 0 0 0 transparent;
+  }
+}

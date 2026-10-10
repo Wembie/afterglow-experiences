@@ -1,0 +1,65 @@
+.closing {
+  position: relative;
+  display: grid;
+  gap: var(--space-5);
+  justify-items: center;
+  align-content: center;
+  max-width: 40rem;
+  min-height: calc(100dvh - var(--space-8) - var(--space-9));
+  margin: 0 auto;
+  text-align: center;
+}
+
+.closing__lights {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 8px;
+  margin-bottom: var(--space-4);
+}
+
+.closing__lights span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-warm);
+  box-shadow: 0 0 10px 2px color-mix(in oklab, var(--color-warm) 70%, transparent);
+  animation: closing-light 1.4s var(--ease-out) both;
+  animation-delay: calc(0.3s + var(--i) * 0.15s);
+}
+
+.closing__title {
+  font-size: var(--text-3xl);
+  outline: none;
+}
+
+.closing__message {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 330;
+  line-height: 1.55;
+  color: var(--color-text-secondary);
+}
+
+.closing__message p + p {
+  margin-top: 1em;
+}
+
+.closing__signature {
+  font-size: var(--text-2xl);
+}
+
+.closing__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-top: var(--space-6);
+}
+
+@keyframes closing-light {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}

@@ -1,0 +1,161 @@
+.constellation-scene {
+  max-width: var(--content-wide);
+  margin: 0 auto;
+}
+
+.constellation-scene__prompt {
+  font-size: var(--text-xl);
+  margin-top: calc(var(--space-6) * -1);
+}
+
+.constellation-scene__count {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.sky-map {
+  position: relative;
+  width: 100%;
+  height: var(--sky-height, clamp(28rem, 70dvh, 46rem));
+  margin-top: var(--space-5);
+}
+
+.sky-map__lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+/* constellationConnect: lines are faint until both memories are visited. */
+.sky-map__lines line {
+  stroke: var(--color-text-muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 6;
+  opacity: 0.35;
+  transition:
+    opacity 900ms var(--ease-out),
+    stroke 900ms var(--ease-out);
+}
+
+.sky-map__lines line.is-lit {
+  stroke: var(--color-glow);
+  stroke-dasharray: none;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 3px var(--color-glow));
+}
+
+.sky-map__stars {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.star {
+  position: absolute;
+  translate: -50% -50%;
+  animation: star-in 1s var(--ease-out) both;
+  animation-delay: calc(0.5s + var(--i) * 0.14s);
+}
+
+.star__button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.star__light {
+  position: relative;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-text);
+  box-shadow: 0 0 12px 3px color-mix(in oklab, var(--color-glow) 70%, transparent);
+  transition:
+    transform var(--dur-small) var(--ease-out),
+    background-color var(--dur-small) var(--ease-out);
+}
+
+/* Four-point glint */
+.star__light::before,
+.star__light::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 34px;
+  height: 1px;
+  translate: -50% -50%;
+  background: linear-gradient(90deg, transparent, var(--color-glow), transparent);
+  opacity: 0.6;
+}
+
+.star__light::after {
+  rotate: 90deg;
+}
+
+.star[data-explored] .star__light {
+  background: var(--color-warm);
+}
+
+.star__button:hover .star__light,
+.star__button:focus-visible .star__light {
+  transform: scale(1.5) rotate(45deg);
+}
+
+.star__label {
+  position: absolute;
+  top: calc(100% - 4px);
+  left: 50%;
+  display: grid;
+  width: max-content;
+  max-width: 11rem;
+  translate: -50% 0;
+  text-align: center;
+  pointer-events: none;
+}
+
+.star__title {
+  font-family: var(--font-display);
+  font-size: var(--text-sm);
+  line-height: 1.2;
+  color: var(--color-text-secondary);
+}
+
+.star__date {
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+  opacity: 0;
+  transition: opacity var(--dur-small) var(--ease-out);
+}
+
+.star__button:hover .star__date,
+.star__button:focus-visible .star__date {
+  opacity: 1;
+}
+
+@media (max-width: 600px) {
+  .star__title {
+    max-width: 7rem;
+    font-size: var(--text-xs);
+  }
+}
+
+@keyframes star-in {
+  from {
+    opacity: 0;
+    scale: 0.3;
+  }
+}

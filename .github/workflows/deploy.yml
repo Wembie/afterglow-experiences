@@ -1,0 +1,162 @@
+name: Quality and deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      profiles:
+        description: 'Deployment profiles to publish, comma separated (deployments/<name>.env). Empty = all.'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: afterglow-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  quality:
+    name: Format, lint, types, tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+      - name: Check deployment profiles
+        run: |
+          for p in $(node scripts/profile.mjs list | node -e "process.stdin.on('data',d=>console.log(JSON.parse(d).join(' ')))"); do
+            node scripts/profile.mjs check "$p"
+          done
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+          retention-days: 7
+
+  plan:
+    name: Plan deployments
+    needs: quality
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      external: ${{ steps.plan.outputs.external }}
+      here: ${{ steps.plan.outputs.here }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - id: plan
+        env:
+          PROFILES: ${{ inputs.profiles }}
+        run: |
+          plan=$(node scripts/profile.mjs plan "$PROFILES")
+          echo "$plan"
+          echo "external=$(echo "$plan" | node -e "process.stdin.on('data',d=>console.log(JSON.stringify(JSON.parse(d).external)))")" >> "$GITHUB_OUTPUT"
+          echo "here=$(echo "$plan" | node -e "process.stdin.on('data',d=>console.log(JSON.stringify(JSON.parse(d).here)))")" >> "$GITHUB_OUTPUT"
+
+  # Profiles with PAGES_TARGET_REPO: build, then push the static site to that
+  # repository, which GitHub Pages serves at /<its-name>/ — e.g. wembie.github.io/mejoramigaisa.
+  deploy-external:
+    name: Publish ${{ matrix.profile }}
+    needs: plan
+    if: needs.plan.outputs.external != '[]' && needs.plan.outputs.external != ''
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: ${{ fromJSON(needs.plan.outputs.external) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: node scripts/profile.mjs github-env "$PROFILE"
+        env:
+          PROFILE: ${{ matrix.profile }}
+      - run: node scripts/profile.mjs check "$PROFILE"
+        env:
+          PROFILE: ${{ matrix.profile }}
+      - run: npm run build
+      - run: touch dist/.nojekyll
+      - name: Require deploy token
+        env:
+          TOKEN: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "::error::Add a repository secret PAGES_DEPLOY_TOKEN (fine-grained token with Contents: read & write on $PAGES_TARGET_REPO). See docs/DEPLOYMENT.md."
+            exit 1
+          fi
+      - uses: peaceiris/actions-gh-pages@v4
+        with:
+          personal_token: ${{ secrets.PAGES_DEPLOY_TOKEN }}
+          external_repository: ${{ env.PAGES_TARGET_REPO }}
+          publish_branch: ${{ env.PAGES_TARGET_BRANCH || 'gh-pages' }}
+          publish_dir: ./dist
+          destination_dir: ${{ env.PAGES_TARGET_DIR }}
+          # Publishing into a folder of another site must not delete that site's other files.
+          keep_files: ${{ env.PAGES_TARGET_DIR != '' }}
+          commit_message: 'deploy: ${{ matrix.profile }} from ${{ github.repository }}@${{ github.sha }}'
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+      - run: echo "Published to $AFTERGLOW_SITE_URL" >> "$GITHUB_STEP_SUMMARY"
+
+  # The profile without PAGES_TARGET_REPO (or a default build) is published
+  # from this repository with the official Pages actions.
+  deploy-here:
+    name: Publish from this repository
+    needs: plan
+    if: needs.plan.outputs.here != '[]' && needs.plan.outputs.here != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - id: pages
+        uses: actions/configure-pages@v5
+      - name: Load profile
+        env:
+          HERE: ${{ needs.plan.outputs.here }}
+          PAGES_BASE_URL: ${{ steps.pages.outputs.base_url }}
+        run: |
+          profile=$(echo "$HERE" | node -e "process.stdin.on('data',d=>console.log(JSON.parse(d)[0]))")
+          node scripts/profile.mjs github-env "$profile"
+          if [ "$profile" = "-" ]; then
+            # No profile: serve every experience at this repository's Pages URL.
+            echo "AFTERGLOW_SITE_URL=$PAGES_BASE_URL" >> "$GITHUB_ENV"
+          else
+            node scripts/profile.mjs check "$profile"
+          fi
+      - run: npm run build
+      - run: touch dist/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+      - id: deployment
+        uses: actions/deploy-pages@v4

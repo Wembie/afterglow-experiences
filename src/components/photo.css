@@ -1,0 +1,59 @@
+.photo {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  background: color-mix(in oklab, var(--color-sky-bottom) 80%, var(--color-atmosphere));
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out);
+}
+
+.photo--loaded {
+  opacity: 1;
+}
+
+/* Memory-like grade: lifted blacks and a faint warm veil, applied as a filter
+   so creators never need to edit their originals. */
+.photo--graded {
+  filter: saturate(0.92) contrast(0.96) brightness(1.02);
+}
+
+.photo--missing {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-3);
+  aspect-ratio: 4 / 3;
+  padding: var(--space-5);
+  opacity: 1;
+  background:
+    radial-gradient(
+      80% 70% at 30% 20%,
+      color-mix(in oklab, var(--color-accent) 22%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      70% 60% at 80% 90%,
+      color-mix(in oklab, var(--color-warm) 18%, transparent),
+      transparent 70%
+    ),
+    color-mix(in oklab, var(--color-sky-bottom) 85%, var(--color-bg));
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+.photo__placeholder-art {
+  width: min(42%, 120px);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.7;
+}
+
+.photo__placeholder-text {
+  font-family: var(--font-hand);
+  font-size: var(--text-lg);
+  line-height: 1.2;
+  color: var(--color-text-secondary);
+}

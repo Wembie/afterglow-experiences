@@ -1,0 +1,147 @@
+/*
+ * AFTERGLOW design tokens.
+ * Colour tokens are set at runtime from src/theme/themes.ts; they are
+ * registered here so the browser can interpolate them between scenes.
+ */
+
+@property --color-bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #090b18;
+}
+@property --color-sky-top {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #090b18;
+}
+@property --color-sky-bottom {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #10152a;
+}
+@property --color-atmosphere {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #2a2470;
+}
+@property --color-text {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #f5f1ff;
+}
+@property --color-text-secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #cfcbea;
+}
+@property --color-text-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #aaa6c8;
+}
+@property --color-accent {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #a799ff;
+}
+@property --color-accent-secondary {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #75d7ff;
+}
+@property --color-glow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b9aeff;
+}
+@property --color-warm {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffd99a;
+}
+
+:root {
+  /* Semantic colour aliases */
+  --color-border: color-mix(in oklab, var(--color-text) 14%, transparent);
+  --color-border-strong: color-mix(in oklab, var(--color-text) 28%, transparent);
+  --color-surface: color-mix(in oklab, var(--color-sky-bottom) 72%, transparent);
+  --color-surface-strong: color-mix(in oklab, var(--color-bg) 88%, var(--color-atmosphere));
+  --color-overlay: color-mix(in oklab, var(--color-bg) 86%, transparent);
+  --color-focus: var(--color-warm);
+  --color-error: #ffb4a8;
+  --color-success: #b8f0c8;
+
+  /* Typography */
+  --font-display: 'Fraunces Variable', 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  --font-body: 'Manrope Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-hand: 'Caveat', 'Segoe Print', 'Bradley Hand', cursive;
+
+  --text-xs: 0.78rem;
+  --text-sm: 0.9rem;
+  --text-base: clamp(1rem, 0.96rem + 0.2vw, 1.08rem);
+  --text-lg: clamp(1.15rem, 1.05rem + 0.45vw, 1.35rem);
+  --text-xl: clamp(1.45rem, 1.2rem + 1.1vw, 2rem);
+  --text-2xl: clamp(1.9rem, 1.4rem + 2.3vw, 3.1rem);
+  --text-3xl: clamp(2.5rem, 1.6rem + 4.2vw, 5rem);
+  --text-hero: clamp(3.2rem, 1.8rem + 7.5vw, 8.5rem);
+  --leading-tight: 1.08;
+  --leading-snug: 1.3;
+  --leading-body: 1.65;
+  --tracking-wide: 0.18em;
+
+  /* Spacing (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+  --space-9: 7rem;
+
+  /* Layout */
+  --measure: 36rem;
+  --content-wide: 72rem;
+  --gutter: clamp(1rem, 0.6rem + 2.4vw, 3rem);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --touch-target: 44px;
+
+  /* Geometry */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* Elevation — light, not shadow: things glow rather than hover. */
+  --shadow-photo: 0 30px 60px -30px rgb(0 0 0 / 0.75), 0 0 0 1px rgb(255 255 255 / 0.06);
+  --glow-soft: 0 0 24px color-mix(in oklab, var(--color-glow) 35%, transparent);
+  --glow-strong: 0 0 42px color-mix(in oklab, var(--color-glow) 60%, transparent);
+
+  /* Motion */
+  --dur-instant: 100ms;
+  --dur-small: 180ms;
+  --dur-standard: 300ms;
+  --dur-scene: 650ms;
+  --dur-theme: 1400ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-gentle: cubic-bezier(0.33, 0.9, 0.4, 1);
+
+  /* Layers */
+  --z-sky: 0;
+  --z-particles: 1;
+  --z-scene: 2;
+  --z-chrome: 10;
+  --z-dialog: 20;
+}
+
+[data-motion='reduced'] {
+  --dur-small: 1ms;
+  --dur-standard: 1ms;
+  --dur-scene: 1ms;
+  --dur-theme: 1ms;
+}

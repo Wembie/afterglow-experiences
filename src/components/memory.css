@@ -1,0 +1,147 @@
+.memory-dialog .dialog__panel {
+  background:
+    radial-gradient(
+      90% 70% at 20% 0%,
+      color-mix(in oklab, var(--color-warm) 9%, transparent),
+      transparent 60%
+    ),
+    var(--color-surface-strong);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 40px 120px -40px rgb(0 0 0 / 0.9);
+}
+
+.memory {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-4);
+  padding-top: 0;
+}
+
+@media (min-width: 860px) {
+  .memory {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-7);
+    padding: var(--space-6);
+    padding-top: var(--space-6);
+  }
+}
+
+.memory__visual {
+  clear: both;
+}
+
+@media (min-width: 860px) {
+  .memory__visual {
+    clear: none;
+  }
+}
+
+.memory__text {
+  display: grid;
+  gap: var(--space-4);
+  padding: 0 var(--space-2) var(--space-4);
+}
+
+.memory__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4em 1.2em;
+}
+
+.memory__title {
+  font-size: var(--text-2xl);
+  outline: none;
+}
+
+.memory__message {
+  font-family: var(--font-hand);
+  font-size: var(--text-xl);
+  line-height: 1.25;
+  color: var(--color-warm);
+  max-width: 28rem;
+}
+
+.memory__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.memory__tags li {
+  padding: 0.15em 0.75em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  color: var(--color-text-muted);
+}
+
+/* ------------------------------------------------------------- Gallery -- */
+
+.gallery {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.gallery__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+.gallery__frame {
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-photo);
+  animation: memory-surface 700ms var(--ease-out) both;
+}
+
+.gallery__photo {
+  max-height: min(68dvh, 46rem);
+  width: 100%;
+  object-fit: contain;
+  background: color-mix(in oklab, var(--color-bg) 70%, black);
+}
+
+.gallery__nav {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+}
+
+.gallery__nav--prev {
+  left: var(--space-3);
+}
+
+.gallery__nav--next {
+  right: var(--space-3);
+}
+
+.gallery__caption {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: 0 var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--color-text-muted);
+}
+
+.gallery__count {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+}
+
+/* memoryPulse: the photograph surfaces like a developing print. */
+@keyframes memory-surface {
+  from {
+    opacity: 0;
+    filter: blur(10px) brightness(1.4) saturate(0.4);
+    transform: scale(1.02);
+  }
+}

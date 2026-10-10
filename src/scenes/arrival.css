@@ -1,0 +1,229 @@
+.scene--arrival {
+  padding: 0;
+}
+
+.arrival {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto auto 1fr;
+  justify-items: center;
+  min-height: 100dvh;
+  padding: calc(var(--space-7) + var(--safe-top)) var(--gutter)
+    calc(var(--space-7) + var(--safe-bottom));
+  text-align: center;
+  overflow: hidden;
+}
+
+.arrival__skip {
+  position: absolute;
+  top: max(var(--space-4), var(--safe-top));
+  right: max(var(--space-4), var(--safe-right));
+  z-index: 2;
+  font-size: var(--text-xs);
+  animation: arrival-fade 1.2s 1.2s var(--ease-out) both;
+}
+
+/* The single luminous element: a small, breathing source of light. */
+.arrival__orb {
+  position: relative;
+  grid-row: 1;
+  align-self: end;
+  width: 140px;
+  height: 140px;
+  margin-bottom: var(--space-6);
+  animation: arrival-fade 2.4s var(--ease-out) both;
+}
+
+.arrival__orb > span {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  border-radius: 50%;
+}
+
+.arrival__orb-core {
+  width: 10px;
+  height: 10px;
+  background: var(--color-text);
+  box-shadow:
+    0 0 12px 2px var(--color-glow),
+    0 0 40px 8px color-mix(in oklab, var(--color-glow) 50%, transparent);
+  animation: orb-breathe 5s var(--ease-in-out) infinite;
+}
+
+.arrival__orb-halo {
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--color-glow) 28%, transparent) 0%,
+    transparent 65%
+  );
+  animation: orb-breathe 5s var(--ease-in-out) infinite;
+}
+
+.arrival__orb-ring {
+  width: 64px;
+  height: 64px;
+  border: 1px solid color-mix(in oklab, var(--color-glow) 30%, transparent);
+  animation: orb-ring 5s var(--ease-out) infinite;
+}
+
+.arrival__copy {
+  grid-row: 2;
+  display: grid;
+  gap: var(--space-4);
+  max-width: 46rem;
+}
+
+.arrival__line {
+  font-size: var(--text-2xl);
+  color: var(--color-text-secondary);
+  animation: arrival-line 1.8s var(--ease-out) both;
+  animation-delay: var(--line-delay, 0s);
+}
+
+.arrival__line--lead {
+  color: var(--color-text);
+}
+
+.arrival__actions {
+  grid-row: 3;
+  min-height: 9rem;
+  display: grid;
+  place-items: center;
+  margin-top: var(--space-7);
+}
+
+/* The invitation: text that seems to be lit from behind, not a SaaS button. */
+.arrival__invite {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--touch-target);
+  padding: var(--space-3) var(--space-5);
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-style: italic;
+  font-variation-settings: 'SOFT' 100;
+  color: var(--color-text);
+  animation: arrival-fade 1.4s var(--ease-out) both;
+}
+
+.arrival__invite::after {
+  content: '';
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 4px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--color-glow), transparent);
+  transition:
+    left var(--dur-standard) var(--ease-out),
+    right var(--dur-standard) var(--ease-out);
+}
+
+.arrival__invite:hover::after,
+.arrival__invite:focus-visible::after {
+  left: 0;
+  right: 0;
+}
+
+.arrival__invite-light {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-warm);
+  box-shadow: 0 0 14px 3px color-mix(in oklab, var(--color-warm) 70%, transparent);
+  animation: orb-breathe 2.6s var(--ease-in-out) infinite;
+}
+
+.arrival__audio {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  animation: arrival-fade 600ms var(--ease-out) both;
+}
+
+.arrival__audio-question {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-style: italic;
+  color: var(--color-text-secondary);
+}
+
+.arrival__audio-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+/* Entering: the light opens and the words step back. */
+.arrival--entering .arrival__orb {
+  animation: orb-open 900ms var(--ease-in-out) forwards;
+}
+
+.arrival--entering .arrival__copy,
+.arrival--entering .arrival__actions {
+  opacity: 0;
+  filter: blur(8px);
+  transition:
+    opacity 500ms var(--ease-in-out),
+    filter 500ms var(--ease-in-out);
+}
+
+@keyframes arrival-line {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(12px);
+    letter-spacing: 0.01em;
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+
+@keyframes arrival-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes orb-breathe {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes orb-ring {
+  from {
+    transform: scale(0.6);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes orb-open {
+  to {
+    transform: scale(9);
+    opacity: 0;
+    filter: blur(6px);
+  }
+}

@@ -1,0 +1,297 @@
+.finale {
+  --finale-1: var(--color-warm);
+  --finale-2: var(--color-accent);
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-height: calc(100dvh - var(--space-8) - var(--space-9));
+  text-align: center;
+}
+
+/* The quiet: the world dims before it opens. Slow, never a flash. */
+.finale__veil {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: var(--color-bg);
+  opacity: 0;
+  transition: opacity 1.4s var(--ease-in-out);
+  pointer-events: none;
+}
+
+.finale--quiet .finale__veil,
+.finale--gather .finale__veil {
+  opacity: 0.7;
+}
+
+/* Clips the oversized rays so they never widen the page. */
+.finale__rays-frame {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Light rays: a slowly turning conic glow, revealed by the bloom. */
+.finale__rays {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  z-index: -1;
+  width: 170vmax;
+  height: 170vmax;
+  translate: -50% -50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in oklab, var(--finale-1) 14%, transparent) 0deg 4deg,
+    transparent 4deg 18deg
+  );
+  mask-image: radial-gradient(circle, black 0%, transparent 55%);
+  -webkit-mask-image: radial-gradient(circle, black 0%, transparent 55%);
+  opacity: 0;
+  transition: opacity 2.4s var(--ease-out);
+  animation: rays-turn 90s linear infinite;
+  pointer-events: none;
+}
+
+.finale--bloom .finale__rays,
+.finale--message .finale__rays,
+.finale--done .finale__rays {
+  opacity: 1;
+}
+
+.finale__stage {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: var(--space-6);
+}
+
+.finale__center {
+  position: relative;
+  width: 1px;
+  height: 1px;
+  margin-bottom: var(--space-6);
+}
+
+.finale__core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--color-text);
+  box-shadow:
+    0 0 20px 6px var(--color-glow),
+    0 0 60px 20px color-mix(in oklab, var(--finale-1) 40%, transparent);
+  scale: 0.5;
+  opacity: 0.6;
+  transition:
+    scale 2s var(--ease-in-out),
+    opacity 2s var(--ease-in-out);
+}
+
+.finale--gather .finale__core {
+  scale: 1.3;
+  opacity: 1;
+}
+
+.finale--name .finale__core,
+.finale--bloom .finale__core,
+.finale--message .finale__core,
+.finale--done .finale__core {
+  scale: 1.6;
+  opacity: 1;
+}
+
+/* Wide halo as a gradient, not a giant box-shadow (which composites in visible tiles). */
+.finale__core::after {
+  content: '';
+  position: absolute;
+  inset: -180px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--finale-1) 38%, transparent) 0%,
+    color-mix(in oklab, var(--finale-2) 14%, transparent) 35%,
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 2s var(--ease-in-out);
+}
+
+.finale--name .finale__core::after,
+.finale--bloom .finale__core::after,
+.finale--message .finale__core::after,
+.finale--done .finale__core::after {
+  opacity: 1;
+}
+
+/* The lights collected along the journey drift into the centre. */
+.finale__mote {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--color-warm);
+  box-shadow: 0 0 10px 2px var(--color-warm);
+  translate: var(--x) var(--y);
+  opacity: 0;
+}
+
+.finale--quiet .finale__mote {
+  animation: mote-appear 1s var(--ease-out) forwards;
+  animation-delay: var(--d);
+}
+
+.finale--gather .finale__mote {
+  opacity: 1;
+  animation: mote-gather 2.2s var(--ease-in-out) forwards;
+  animation-delay: var(--d);
+}
+
+.finale__ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 40vmin;
+  height: 40vmin;
+  translate: -50% -50%;
+  border-radius: 50%;
+  border: 1px solid color-mix(in oklab, var(--finale-1) 60%, transparent);
+  opacity: 0;
+  scale: 0.1;
+}
+
+.finale--bloom .finale__ring {
+  animation: ring-expand 2.6s var(--ease-out) forwards;
+}
+
+.finale--bloom .finale__ring--2 {
+  animation-delay: 0.45s;
+  border-color: color-mix(in oklab, var(--finale-2) 60%, transparent);
+}
+
+.finale__words {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: center;
+  max-width: 44rem;
+}
+
+.finale__headline,
+.finale__name {
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(14px);
+  transition:
+    opacity 1.6s var(--ease-out),
+    filter 1.6s var(--ease-out),
+    transform 1.6s var(--ease-out);
+}
+
+.finale__headline[data-shown],
+.finale__name[data-shown] {
+  opacity: 1;
+  filter: none;
+  transform: none;
+}
+
+.finale__headline {
+  font-size: var(--text-sm);
+  color: var(--color-warm);
+  transition-delay: 0s;
+}
+
+.finale__name {
+  font-size: var(--text-hero);
+  font-weight: 300;
+  font-variation-settings: 'SOFT' 100;
+  font-style: italic;
+  line-height: 0.95;
+  outline: none;
+  transition-delay: 0.3s;
+}
+
+.finale__name-sweep {
+  background: linear-gradient(
+      100deg,
+      var(--color-text) 0%,
+      var(--color-text) 38%,
+      var(--finale-1) 50%,
+      var(--color-text) 62%,
+      var(--color-text) 100%
+    )
+    0 0 / 300% 100% no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: light-sweep 3.2s 0.6s var(--ease-in-out) both;
+  padding: 0 0.08em;
+}
+
+.finale__message {
+  display: grid;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 330;
+  line-height: 1.5;
+  color: var(--color-text-secondary);
+}
+
+.finale__signature {
+  font-size: var(--text-xl);
+}
+
+.finale__actions {
+  display: flex;
+  justify-content: center;
+  min-height: var(--touch-target);
+  margin-top: var(--space-6);
+}
+
+@keyframes rays-turn {
+  to {
+    rotate: 360deg;
+  }
+}
+
+@keyframes mote-appear {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mote-gather {
+  to {
+    translate: 0 0;
+    opacity: 0;
+    scale: 0.4;
+  }
+}
+
+@keyframes ring-expand {
+  0% {
+    opacity: 0.9;
+    scale: 0.1;
+  }
+  100% {
+    opacity: 0;
+    scale: 2.4;
+  }
+}
+
+@keyframes light-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}

@@ -1,0 +1,84 @@
+.scene {
+  position: relative;
+  z-index: var(--z-scene);
+  min-height: 100dvh;
+  outline: none;
+  /* Decorative glows may bleed past the edges; they must never cause sideways scrolling. */
+  overflow-x: clip;
+  padding: calc(var(--space-8) + var(--safe-top)) var(--gutter)
+    calc(var(--space-9) + var(--safe-bottom));
+}
+
+.scene--leaving {
+  opacity: 0;
+  transform: translateY(-8px);
+  filter: blur(6px);
+  transition:
+    opacity 280ms var(--ease-in-out),
+    transform 280ms var(--ease-in-out),
+    filter 280ms var(--ease-in-out);
+}
+
+/* sceneCrossfade */
+.scene-enter--crossfade {
+  animation: scene-crossfade var(--dur-scene) var(--ease-out) both;
+}
+
+.scene-enter--rise {
+  animation: scene-rise 750ms var(--ease-out) both;
+}
+
+.scene-enter--bloom {
+  animation: scene-bloom 900ms var(--ease-out) both;
+}
+
+@keyframes scene-crossfade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes scene-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+@keyframes scene-bloom {
+  from {
+    opacity: 0;
+    filter: blur(14px) brightness(1.6);
+    transform: scale(1.015);
+  }
+}
+
+.scene-header {
+  display: grid;
+  gap: var(--space-3);
+  max-width: var(--content-wide);
+  margin: 0 auto var(--space-7);
+}
+
+.scene-header__title {
+  font-size: var(--text-3xl);
+  outline: none;
+}
+
+.scene-header__subtitle {
+  font-size: var(--text-lg);
+  color: var(--color-text-secondary);
+  max-width: 40rem;
+}
+
+.scene-fallback {
+  display: grid;
+  gap: var(--space-4);
+  place-content: center;
+  min-height: 60dvh;
+  text-align: center;
+}
+
+.scene-fallback .display {
+  font-size: var(--text-2xl);
+}
